@@ -1,620 +1,348 @@
-// ============================================
-// DATABASE KONTEN
-// ============================================
-const DB = {
+// Database konten
+const DATA = {
     hewan: [
-        { e: '🐄', n: 'Sapi' }, { e: '🐱', n: 'Kucing' },
-        { e: '🐔', n: 'Ayam' }, { e: '🦆', n: 'Bebek' },
-        { e: '🐶', n: 'Anjing' }, { e: '🐑', n: 'Domba' },
-        { e: '🐴', n: 'Kuda' }, { e: '🐷', n: 'Babi' },
-        { e: '🐭', n: 'Tikus' }, { e: '🐘', n: 'Gajah' },
-        { e: '🦁', n: 'Singa' }, { e: '🐵', n: 'Monyet' }
+        {nama: 'Sapi', gambar: ''},
+        {nama: 'Kucing', gambar: '🐱'},
+        {nama: 'Ayam', gambar: '🐔'},
+        {nama: 'Bebek', gambar: '🦆'},
+        {nama: 'Anjing', gambar: '🐶'},
+        {nama: 'Kuda', gambar: '🐴'},
+        {nama: 'Gajah', gambar: '🐘'},
+        {nama: 'Singa', gambar: '🦁'}
     ],
     buah: [
-        { e: '🍎', n: 'Apel' }, { e: '🍌', n: 'Pisang' },
-        { e: '🍊', n: 'Jeruk' }, { e: '🍇', n: 'Anggur' },
-        { e: '🍓', n: 'Stroberi' }, { e: '🍉', n: 'Semangka' },
-        { e: '🍑', n: 'Persik' }, { e: '🍒', n: 'Ceri' }
+        {nama: 'Apel', gambar: '🍎'},
+        {nama: 'Pisang', gambar: ''},
+        {nama: 'Jeruk', gambar: '🍊'},
+        {nama: 'Anggur', gambar: '🍇'},
+        {nama: 'Stroberi', gambar: ''},
+        {nama: 'Semangka', gambar: '🍉'}
     ],
     warna: [
-        { n: 'Merah', c: '#ff4444' }, { n: 'Biru', c: '#4488ff' },
-        { n: 'Kuning', c: '#ffdd44' }, { n: 'Hijau', c: '#44cc44' },
-        { n: 'Ungu', c: '#aa44ff' }, { n: 'Oranye', c: '#ff8844' }
-    ],
-    bentuk: [
-        { n: 'Lingkaran', e: '⚫' }, { n: 'Kotak', e: '🟦' },
-        { n: 'Segitiga', e: '🔺' }, { n: 'Bintang', e: '⭐' },
-        { n: 'Hati', e: '❤️' }
-    ],
-    tubuh: [
-        { e: '👁️', n: 'Mata' }, { e: '👃', n: 'Hidung' },
-        { e: '👄', n: 'Mulut' }, { e: '👂', n: 'Telinga' },
-        { e: '✋', n: 'Tangan' }, { e: '🦶', n: 'Kaki' }
-    ],
-    kendaraan: [
-        { e: '🚗', n: 'Mobil' }, { e: '🚌', n: 'Bus' },
-        { e: '🚲', n: 'Sepeda' }, { e: '✈️', n: 'Pesawat' },
-        { e: '🚢', n: 'Kapal' }, { e: '🚂', n: 'Kereta' }
+        {nama: 'Merah', kode: '#ff4444'},
+        {nama: 'Biru', kode: '#4488ff'},
+        {nama: 'Kuning', kode: '#ffdd44'},
+        {nama: 'Hijau', kode: '#44cc44'},
+        {nama: 'Ungu', kode: '#aa44ff'},
+        {nama: 'Oranye', kode: '#ff8844'}
     ]
 };
 
-// ============================================
-// STATE GAME
-// ============================================
+// State game
 let state = {
-    levelAktif: 1,
-    mulaiKategori: 1,
-    akhirKategori: 50,
-    progress: JSON.parse(localStorage.getItem('progress') || '{}'),
-    salahCount: 0,
-    soalAktif: null
+    level: 1,
+    mulai: 1,
+    akhir: 50,
+    salah: 0,
+    soal: null,
+    progress: JSON.parse(localStorage.getItem('progress') || '{}')
 };
 
-// Cache level yang sudah di-generate (PENTING!)
-const cacheLevel = {};
-
-// ============================================
-// GENERATOR LEVEL - DIPERBAIKI!
-// ============================================
-function generateLevel(nomor) {
-    // Cek cache dulu (HEMAT CPU!)
-    if (cacheLevel[nomor]) return cacheLevel[nomor];
-    
-    let soal;
-    if (nomor <= 50) soal = genSensorik(nomor);
-    else if (nomor <= 150) soal = genToddler(nomor);
-    else if (nomor <= 300) soal = genPreschoolA(nomor);
-    else if (nomor <= 500) soal = genPreschoolB(nomor);
-    else if (nomor <= 750) soal = genSchoolA(nomor);
-    else soal = genSchoolB(nomor);
-    
-    // Simpan ke cache
-    cacheLevel[nomor] = soal;
-    return soal;
+// Generate level
+function buatLevel(n) {
+    if (n <= 50) return levelSensorik(n);
+    if (n <= 150) return levelBalita(n);
+    if (n <= 300) return levelTK(n);
+    if (n <= 500) return levelSD1(n);
+    if (n <= 750) return levelSD2(n);
+    return levelSD3(n);
 }
 
-// Helper: pilih N item acak dari array (TANPA shuffle penuh)
-function pilihItem(arr, n, seed) {
-    const hasil = [];
-    const used = new Set();
-    let idx = seed % arr.length;
-    
-    while (hasil.length < n && hasil.length < arr.length) {
-        if (!used.has(idx)) {
-            hasil.push(arr[idx]);
-            used.add(idx);
-        }
-        idx = (idx + 7) % arr.length; // Lompat 7 untuk variasi
+function levelSensorik(n) {
+    const hewan = DATA.hewan[n % DATA.hewan.length];
+    return {
+        tipe: 'tekan',
+        tanya: 'Tekan ' + hewan.nama + '! 👆',
+        display: hewan.gambar,
+        opsi: [hewan],
+        jawaban: 0
+    };
+}
+
+function levelBalita(n) {
+    const idx = n % DATA.hewan.length;
+    const benar = DATA.hewan[idx];
+    const opsi = [benar];
+    for (let i = 1; i < 3; i++) {
+        const r = DATA.hewan[(idx + i * 2) % DATA.hewan.length];
+        if (!opsi.find(o => o.nama === r.nama)) opsi.push(r);
     }
-    return hasil;
-}
-
-// USIA 1-2 TAHUN
-function genSensorik(n) {
-    const tipe = n % 3;
+    while (opsi.length < 3) opsi.push(DATA.hewan[(n + opsi.length) % DATA.hewan.length]);
     
-    if (tipe === 0) {
-        const h = DB.hewan[n % DB.hewan.length];
-        return {
-            tipe: 'tap_sound',
-            instruksi: `Tekan ${h.n}`,
-            emoji: '👆',
-            opsi: [h],
-            jawabanIdx: 0,
-            suara: `Tekan gambar ${h.n}`
-        };
-    } else if (tipe === 1) {
-        const benar = DB.hewan[n % DB.hewan.length];
-        const opsi = pilihItem(DB.hewan, 3, n);
-        // Pastikan jawaban benar ada di opsi
-        if (!opsi.find(o => o.n === benar.n)) opsi[0] = benar;
-        const jawabanIdx = opsi.findIndex(o => o.n === benar.n);
-        return {
-            tipe: 'find_item',
-            instruksi: `Mana ${benar.n}?`,
-            emoji: benar.e,
-            opsi: opsi,
-            jawabanIdx: jawabanIdx,
-            suara: `Mana gambar ${benar.n}?`
-        };
-    } else {
-        const benar = DB.buah[n % DB.buah.length];
-        const opsi = pilihItem(DB.buah, 3, n);
-        if (!opsi.find(o => o.n === benar.n)) opsi[0] = benar;
-        const jawabanIdx = opsi.findIndex(o => o.n === benar.n);
-        return {
-            tipe: 'find_item',
-            instruksi: `Mana ${benar.n}?`,
-            emoji: benar.e,
-            opsi: opsi,
-            jawabanIdx: jawabanIdx,
-            suara: `Mana gambar ${benar.n}?`
-        };
-    }
+    return {
+        tipe: 'pilih',
+        tanya: 'Mana ' + benar.nama + '? ',
+        display: benar.gambar,
+        opsi: acak(opsi),
+        jawaban: 0
+    };
 }
 
-// USIA 2-3 TAHUN
-function genToddler(n) {
-    const tipe = n % 4;
-    
-    if (tipe === 0) {
-        const benar = DB.warna[n % DB.warna.length];
-        const opsi = pilihItem(DB.warna, 3, n);
-        if (!opsi.find(o => o.n === benar.n)) opsi[0] = benar;
-        const jawabanIdx = opsi.findIndex(o => o.n === benar.n);
-        return {
-            tipe: 'find_color',
-            instruksi: `Mana warna ${benar.n}?`,
-            emoji: '🎨',
-            opsi: opsi,
-            jawabanIdx: jawabanIdx,
-            suara: `Mana warna ${benar.n}?`
-        };
-    } else if (tipe === 1) {
-        const benar = DB.bentuk[n % DB.bentuk.length];
-        const opsi = pilihItem(DB.bentuk, 3, n);
-        if (!opsi.find(o => o.n === benar.n)) opsi[0] = benar;
-        const jawabanIdx = opsi.findIndex(o => o.n === benar.n);
-        return {
-            tipe: 'find_shape',
-            instruksi: `Mana bentuk ${benar.n}?`,
-            emoji: benar.e,
-            opsi: opsi,
-            jawabanIdx: jawabanIdx,
-            suara: `Mana bentuk ${benar.n}?`
-        };
-    } else if (tipe === 2) {
-        const jumlah = (n % 3) + 1;
-        const emoji = DB.hewan[n % DB.hewan.length].e;
-        const tampilan = Array(jumlah).fill(emoji).join(' ');
-        return {
-            tipe: 'count',
-            instruksi: `Ada berapa?`,
-            emoji: '🔢',
-            tampilan: tampilan,
-            opsi: [{n:'1',e:'1'},{n:'2',e:'2'},{n:'3',e:'3'}],
-            jawabanIdx: jumlah - 1,
-            suara: `Hitung jumlahnya`
-        };
-    } else {
-        const benar = DB.kendaraan[n % DB.kendaraan.length];
-        const opsi = pilihItem(DB.kendaraan, 3, n);
-        if (!opsi.find(o => o.n === benar.n)) opsi[0] = benar;
-        const jawabanIdx = opsi.findIndex(o => o.n === benar.n);
-        return {
-            tipe: 'find_item',
-            instruksi: `Mana ${benar.n}?`,
-            emoji: benar.e,
-            opsi: opsi,
-            jawabanIdx: jawabanIdx,
-            suara: `Mana gambar ${benar.n}?`
-        };
-    }
-}
-
-// USIA 3-4 TAHUN
-function genPreschoolA(n) {
-    const tipe = n % 3;
-    
-    if (tipe === 0) {
-        const huruf = String.fromCharCode(65 + (n % 26));
-        const opsi = [];
-        opsi.push({n: huruf, e: huruf});
-        for (let i = 1; i < 4; i++) {
-            const h = String.fromCharCode(65 + ((n + i * 3) % 26));
-            if (!opsi.find(o => o.n === h)) opsi.push({n: h, e: h});
-        }
-        while (opsi.length < 4) opsi.push({n: 'Z', e: 'Z'});
-        return {
-            tipe: 'find_letter',
-            instruksi: `Mana huruf ${huruf}?`,
-            emoji: '🔤',
-            opsi: opsi,
-            jawabanIdx: 0,
-            suara: `Mana huruf ${huruf}?`
-        };
-    } else if (tipe === 1) {
-        const angka = (n % 10) + 1;
-        const opsi = [];
-        opsi.push({n: angka.toString(), e: angka.toString()});
-        for (let i = 1; i < 4; i++) {
-            const a = ((n + i * 2) % 10) + 1;
-            if (!opsi.find(o => o.n === a.toString())) opsi.push({n: a.toString(), e: a.toString()});
-        }
-        return {
-            tipe: 'find_number',
-            instruksi: `Mana angka ${angka}?`,
-            emoji: '🔢',
-            opsi: opsi,
-            jawabanIdx: 0,
-            suara: `Mana angka ${angka}?`
-        };
-    } else {
-        const jumlah = (n % 10) + 1;
-        const emoji = DB.buah[n % DB.buah.length].e;
-        const tampilan = Array(jumlah).fill(emoji).join(' ');
-        const opsi = [];
-        for (let i = 0; i < 4; i++) {
-            const a = ((n + i) % 10) + 1;
-            opsi.push({n: a.toString(), e: a.toString()});
-        }
-        const jawabanIdx = opsi.findIndex(o => parseInt(o.n) === jumlah);
-        return {
-            tipe: 'count',
-            instruksi: `Ada berapa?`,
-            emoji: '🔢',
-            tampilan: tampilan,
-            opsi: opsi,
-            jawabanIdx: jawabanIdx >= 0 ? jawabanIdx : 0,
-            suara: `Hitung jumlahnya`
-        };
-    }
-}
-
-// USIA 4-5 TAHUN
-function genPreschoolB(n) {
+function levelTK(n) {
     const tipe = n % 2;
-    
     if (tipe === 0) {
-        const a = (n % 5) + 1;
-        const b = ((n * 3) % 5) + 1;
-        const hasil = a + b;
+        const warna = DATA.warna[n % DATA.warna.length];
+        const opsi = [warna];
+        for (let i = 1; i < 3; i++) {
+            const r = DATA.warna[(n + i * 2) % DATA.warna.length];
+            if (!opsi.find(o => o.nama === r.nama)) opsi.push(r);
+        }
+        return {
+            tipe: 'warna',
+            tanya: 'Mana warna ' + warna.nama + '? 🎨',
+            display: '🎨',
+            opsi: acak(opsi),
+            jawaban: 0
+        };
+    } else {
+        const jumlah = (n % 5) + 1;
+        const emoji = DATA.buah[n % DATA.buah.length].gambar;
+        const tampilan = Array(jumlah).fill(emoji).join(' ');
         const opsi = [];
-        opsi.push({n: hasil.toString(), e: hasil.toString()});
-        for (let i = 1; i < 4; i++) {
-            const r = Math.max(1, hasil + (i % 2 === 0 ? i : -i));
-            if (!opsi.find(o => o.n === r.toString())) opsi.push({n: r.toString(), e: r.toString()});
-        }
+        for (let i = 1; i <= 3; i++) opsi.push({nama: i.toString(), gambar: i.toString()});
         return {
-            tipe: 'math',
-            instruksi: `${a} + ${b} = ?`,
-            emoji: '➕',
-            opsi: opsi,
-            jawabanIdx: 0,
-            suara: `${a} tambah ${b} sama dengan berapa?`
-        };
-    } else {
-        const a = (n % 5) + 1;
-        const b = ((n * 2) % 5) + 1;
-        const emoji = DB.buah[n % DB.buah.length].e;
-        const benar = a > b ? 0 : 1;
-        return {
-            tipe: 'compare',
-            instruksi: `Mana yang LEBIH BANYAK?`,
-            emoji: '⚖️',
-            opsi: [
-                {e: Array(a).fill(emoji).join(' '), n: a},
-                {e: Array(b).fill(emoji).join(' '), n: b}
-            ],
-            jawabanIdx: benar,
-            suara: `Mana yang lebih banyak?`
+            tipe: 'hitung',
+            tanya: 'Ada berapa? 🔢',
+            display: tampilan,
+            opsi: acak(opsi),
+            jawaban: opsi.findIndex(o => parseInt(o.nama) === jumlah)
         };
     }
 }
 
-// USIA 5-6 TAHUN
-function genSchoolA(n) {
-    const tipe = n % 3;
-    
-    if (tipe === 0) {
-        const a = (n % 10) + 1;
-        const b = ((n * 2) % 10) + 1;
-        const hasil = a + b;
-        const opsi = [{n: hasil.toString(), e: hasil.toString()}];
-        for (let i = 1; i < 4; i++) {
-            const r = Math.max(1, hasil + (i % 2 === 0 ? i : -i));
-            if (!opsi.find(o => o.n === r.toString())) opsi.push({n: r.toString(), e: r.toString()});
-        }
-        return {
-            tipe: 'math',
-            instruksi: `${a} + ${b} = ?`,
-            emoji: '➕',
-            opsi: opsi,
-            jawabanIdx: 0,
-            suara: `${a} tambah ${b} sama dengan berapa?`
-        };
-    } else if (tipe === 1) {
-        const a = (n % 10) + 5;
-        const b = (n % 4) + 1;
-        const hasil = a - b;
-        const opsi = [{n: hasil.toString(), e: hasil.toString()}];
-        for (let i = 1; i < 4; i++) {
-            const r = Math.max(0, hasil + (i % 2 === 0 ? i : -i));
-            if (!opsi.find(o => o.n === r.toString())) opsi.push({n: r.toString(), e: r.toString()});
-        }
-        return {
-            tipe: 'math',
-            instruksi: `${a} - ${b} = ?`,
-            emoji: '➖',
-            opsi: opsi,
-            jawabanIdx: 0,
-            suara: `${a} kurang ${b} sama dengan berapa?`
-        };
-    } else {
-        const kata = DB.hewan[n % DB.hewan.length];
-        const opsi = pilihItem(DB.hewan, 4, n);
-        if (!opsi.find(o => o.n === kata.n)) opsi[0] = kata;
-        const jawabanIdx = opsi.findIndex(o => o.n === kata.n);
-        return {
-            tipe: 'read_word',
-            instruksi: `Baca: ${kata.n}`,
-            emoji: '📖',
-            opsi: opsi,
-            jawabanIdx: jawabanIdx,
-            suara: `Baca kata ${kata.n}, lalu tekan gambarnya`
-        };
+function levelSD1(n) {
+    const a = (n % 5) + 1;
+    const b = ((n * 3) % 5) + 1;
+    const hasil = a + b;
+    const opsi = [{nama: hasil.toString(), gambar: hasil.toString()}];
+    for (let i = 1; i < 4; i++) {
+        const r = Math.max(1, hasil + (i % 2 === 0 ? i : -i));
+        if (!opsi.find(o => o.nama === r.toString())) opsi.push({nama: r.toString(), gambar: r.toString()});
     }
+    return {
+        tipe: 'matematika',
+        tanya: a + ' + ' + b + ' = ? ➕',
+        display: '🧮',
+        opsi: acak(opsi),
+        jawaban: 0
+    };
 }
 
-// USIA 6-7 TAHUN
-function genSchoolB(n) {
-    const tipe = n % 3;
-    
-    if (tipe === 0) {
-        const a = (n % 25) + 5;
-        const b = ((n * 3) % 20) + 5;
-        const hasil = a + b;
-        const opsi = [{n: hasil.toString(), e: hasil.toString()}];
-        for (let i = 1; i < 4; i++) {
-            const r = Math.max(1, hasil + (i % 2 === 0 ? i*2 : -i*2));
-            if (!opsi.find(o => o.n === r.toString())) opsi.push({n: r.toString(), e: r.toString()});
-        }
-        return {
-            tipe: 'math',
-            instruksi: `${a} + ${b} = ?`,
-            emoji: '➕',
-            opsi: opsi,
-            jawabanIdx: 0,
-            suara: `${a} tambah ${b} sama dengan berapa?`
-        };
-    } else if (tipe === 1) {
-        const a = (n % 30) + 20;
-        const b = (n % 15) + 5;
-        const hasil = a - b;
-        const opsi = [{n: hasil.toString(), e: hasil.toString()}];
-        for (let i = 1; i < 4; i++) {
-            const r = Math.max(0, hasil + (i % 2 === 0 ? i*2 : -i*2));
-            if (!opsi.find(o => o.n === r.toString())) opsi.push({n: r.toString(), e: r.toString()});
-        }
-        return {
-            tipe: 'math',
-            instruksi: `${a} - ${b} = ?`,
-            emoji: '➖',
-            opsi: opsi,
-            jawabanIdx: 0,
-            suara: `${a} kurang ${b} sama dengan berapa?`
-        };
-    } else {
-        const a = (n % 50) + 10;
-        const b = ((n * 7) % 50) + 10;
-        const benar = a > b ? 0 : 1;
-        return {
-            tipe: 'compare_number',
-            instruksi: `Mana yang LEBIH BESAR?`,
-            emoji: '📊',
-            opsi: [
-                {n: a.toString(), e: a.toString()},
-                {n: b.toString(), e: b.toString()}
-            ],
-            jawabanIdx: benar,
-            suara: `Mana angka yang lebih besar?`
-        };
+function levelSD2(n) {
+    const a = (n % 10) + 1;
+    const b = ((n * 2) % 10) + 1;
+    const hasil = a + b;
+    const opsi = [{nama: hasil.toString(), gambar: hasil.toString()}];
+    for (let i = 1; i < 4; i++) {
+        const r = Math.max(1, hasil + (i % 2 === 0 ? i : -i));
+        if (!opsi.find(o => o.nama === r.toString())) opsi.push({nama: r.toString(), gambar: r.toString()});
     }
+    return {
+        tipe: 'matematika',
+        tanya: a + ' + ' + b + ' = ? ➕',
+        display: '',
+        opsi: acak(opsi),
+        jawaban: 0
+    };
 }
 
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
-function ucapkan(teks) {
-    if (!('speechSynthesis' in window)) return;
-    
-    // Cancel sebelumnya (PENTING!)
-    window.speechSynthesis.cancel();
-    
-    const utter = new SpeechSynthesisUtterance(teks);
-    utter.lang = 'id-ID';
-    utter.rate = 0.9;
-    utter.pitch = 1.1;
-    utter.volume = 1;
-    window.speechSynthesis.speak(utter);
-}
-
-function simpanProgress(level, bintang) {
-    const current = state.progress[level] || 0;
-    if (bintang > current) {
-        state.progress[level] = bintang;
-        localStorage.setItem('progress', JSON.stringify(state.progress));
+function levelSD3(n) {
+    const a = (n % 20) + 5;
+    const b = ((n * 3) % 15) + 5;
+    const hasil = a + b;
+    const opsi = [{nama: hasil.toString(), gambar: hasil.toString()}];
+    for (let i = 1; i < 4; i++) {
+        const r = Math.max(1, hasil + (i % 2 === 0 ? i * 2 : -i * 2));
+        if (!opsi.find(o => o.nama === r.toString())) opsi.push({nama: r.toString(), gambar: r.toString()});
     }
+    return {
+        tipe: 'matematika',
+        tanya: a + ' + ' + b + ' = ? ➕',
+        display: '🧮',
+        opsi: acak(opsi),
+        jawaban: 0
+    };
 }
 
-function dapatBintang() {
-    if (state.salahCount === 0) return 3;
-    if (state.salahCount === 1) return 2;
-    return 1;
+// Helper: acak array
+function acak(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 }
 
-function levelTerbuka(n) {
-    if (n === 1) return true;
-    return state.progress[n - 1] && state.progress[n - 1] > 0;
+// Tampilkan layar
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
 }
 
-// ============================================
-// NAVIGASI LAYAR
-// ============================================
-function pindahLayar(id) {
-    document.querySelectorAll('.layar').forEach(l => l.classList.remove('aktif'));
-    document.getElementById(id).classList.add('aktif');
+function showMenu() {
+    showScreen('menu');
 }
 
-function keMenu() {
-    pindahLayar('layar-menu');
+function showLevels() {
+    renderLevels();
+    showScreen('levels');
 }
 
-function keLevel() {
-    tampilkanGridLevel();
-    pindahLayar('layar-level');
+function startGame(mulai, akhir) {
+    state.mulai = mulai;
+    state.akhir = akhir;
+    showLevels();
 }
 
-// ============================================
-// MENU KATEGORI
-// ============================================
-document.querySelectorAll('.btn-kat').forEach(btn => {
-    btn.addEventListener('click', () => {
-        state.mulaiKategori = parseInt(btn.dataset.mulai);
-        state.akhirKategori = parseInt(btn.dataset.akhir);
-        tampilkanGridLevel();
-        pindahLayar('layar-level');
-    });
-});
-
-function tampilkanGridLevel() {
-    document.getElementById('judul-level').textContent = 
-        `Level ${state.mulaiKategori}-${state.akhirKategori}`;
-    const grid = document.getElementById('grid-level');
+function renderLevels() {
+    document.getElementById('levelTitle').textContent = 'Level ' + state.mulai + '-' + state.akhir;
+    const grid = document.getElementById('levelGrid');
     grid.innerHTML = '';
     
-    for (let i = state.mulaiKategori; i <= state.akhirKategori; i++) {
+    const totalLevel = state.akhir - state.mulai + 1;
+    const selesaiCount = Object.keys(state.progress).filter(k => {
+        const num = parseInt(k);
+        return num >= state.mulai && num <= state.akhir && state.progress[k];
+    }).length;
+    
+    const progressPercent = (selesaiCount / totalLevel) * 100;
+    document.getElementById('progressFill').style.width = progressPercent + '%';
+    
+    for (let i = state.mulai; i <= state.akhir; i++) {
         const btn = document.createElement('button');
-        btn.className = 'btn-level';
-        const terbuka = levelTerbuka(i);
-        if (!terbuka) btn.classList.add('terkunci');
+        btn.className = 'level-btn';
         
-        const bintang = state.progress[i] || 0;
-        const bintangStr = '⭐'.repeat(bintang) + '☆'.repeat(3 - bintang);
+        const selesai = state.progress[i];
+        if (selesai) {
+            btn.classList.add('completed');
+            btn.textContent = i + ' ⭐';
+        } else if (i === 1 || state.progress[i - 1]) {
+            btn.textContent = i;
+        } else {
+            btn.classList.add('locked');
+            btn.textContent = i;
+        }
         
-        btn.innerHTML = `<div>${i}</div><div class="bintang-level">${bintangStr}</div>`;
-        
-        if (terbuka) {
-            btn.addEventListener('click', () => mulaiLevel(i));
+        if (i === 1 || state.progress[i - 1]) {
+            btn.onclick = () => mainLevel(i);
         }
         
         grid.appendChild(btn);
     }
 }
 
-// ============================================
-// MAIN GAME - DIPERBAIKI!
-// ============================================
-function mulaiLevel(nomor) {
-    state.levelAktif = nomor;
-    state.salahCount = 0;
-    state.soalAktif = generateLevel(nomor);
+function mainLevel(n) {
+    state.level = n;
+    state.salah = 0;
+    state.soal = buatLevel(n);
     
-    document.getElementById('no-level').textContent = nomor;
-    renderSoal();
-    pindahLayar('layar-main');
+    document.getElementById('currentLevel').textContent = n;
+    document.getElementById('questionText').textContent = state.soal.tanya;
+    document.getElementById('questionDisplay').textContent = state.soal.display;
+    document.getElementById('feedback').textContent = '';
     
-    setTimeout(() => ulangInstruksi(), 400);
-}
-
-function renderSoal() {
-    const soal = state.soalAktif;
-    document.getElementById('instruksi-emoji').textContent = soal.emoji;
-    document.getElementById('instruksi-teks').textContent = soal.instruksi;
+    const opsiDiv = document.getElementById('options');
+    opsiDiv.innerHTML = '';
     
-    const area = document.getElementById('area-soal');
-    area.innerHTML = '';
-    
-    // Tampilan khusus hitung
-    if (soal.tampilan) {
-        const div = document.createElement('div');
-        div.style.cssText = 'grid-column:1/-1;background:white;border:2px solid #ddd;padding:15px;border-radius:15px;font-size:1.8em;text-align:center;margin-bottom:5px;';
-        div.textContent = soal.tampilan;
-        area.appendChild(div);
-    }
-    
-    // Grid class
-    const jml = soal.opsi.length;
-    area.className = 'area-soal';
-    if (jml === 2) area.classList.add('grid-2');
-    else if (jml === 3) area.classList.add('grid-3');
-    else if (jml === 4) area.classList.add('grid-4');
-    
-    // Render opsi
-    soal.opsi.forEach((opsi, idx) => {
-        const div = document.createElement('button');
-        div.className = 'opsi';
+    state.soal.opsi.forEach((opsi, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'option';
         
-        if (soal.tipe === 'find_color') {
-            const w = document.createElement('div');
-            w.className = 'opsi-warna';
-            w.style.background = opsi.c;
-            div.appendChild(w);
-        } else if (soal.tipe === 'compare') {
-            div.innerHTML = `<div style="font-size:0.6em;line-height:1.2;">${opsi.e}</div>`;
+        if (state.soal.tipe === 'warna') {
+            btn.style.background = opsi.kode;
+            btn.style.height = '80px';
+            btn.style.borderRadius = '50%';
         } else {
-            div.innerHTML = `<div class="opsi-teks">${opsi.e}</div>`;
+            btn.textContent = opsi.gambar;
         }
         
-        // PENTING: simpan idx langsung, tidak perlu cari-cari lagi
-        div.dataset.idx = idx;
-        div.addEventListener('click', () => jawab(idx, div));
-        area.appendChild(div);
+        btn.onclick = () => jawab(idx, btn);
+        opsiDiv.appendChild(btn);
     });
-}
-
-function ulangInstruksi() {
-    if (state.soalAktif) ucapkan(state.soalAktif.suara);
-}
-
-// DIPERBAIKI: Logika jawaban jauh lebih sederhana!
-function jawab(idx, elemen) {
-    const soal = state.soalAktif;
-    const benar = idx === soal.jawabanIdx; // LANGSUNG CEK!
     
-    const feedback = document.getElementById('feedback');
+    showScreen('game');
+}
+
+function jawab(idx, elemen) {
+    const soal = state.soal;
+    const benar = idx === soal.jawaban;
     
     if (benar) {
-        elemen.classList.add('benar');
-        feedback.textContent = '✅';
-        feedback.classList.add('tampil');
-        ucapkan('Hebat!');
-        
-        setTimeout(() => {
-            feedback.classList.remove('tampil');
-            selesaiLevel();
-        }, 900);
+        elemen.classList.add('correct');
+        document.getElementById('feedback').textContent = '🎉 Benar!';
+        buatKonfeti();
+        setTimeout(selesaiLevel, 1200);
     } else {
-        elemen.classList.add('salah');
-        state.salahCount++;
-        feedback.textContent = '❌';
-        feedback.classList.add('tampil');
-        ucapkan('Coba lagi');
-        
+        elemen.classList.add('wrong');
+        state.salah++;
+        document.getElementById('feedback').textContent = '😅 Coba lagi!';
         setTimeout(() => {
-            feedback.classList.remove('tampil');
-            elemen.classList.remove('salah');
-        }, 600);
+            elemen.classList.remove('wrong');
+            document.getElementById('feedback').textContent = '';
+        }, 800);
     }
 }
 
 function selesaiLevel() {
-    const bintang = dapatBintang();
-    simpanProgress(state.levelAktif, bintang);
+    const bintang = state.salah === 0 ? 3 : state.salah === 1 ? 2 : 1;
+    const sekarang = state.progress[state.level] || 0;
+    if (bintang > sekarang) {
+        state.progress[state.level] = bintang;
+        localStorage.setItem('progress', JSON.stringify(state.progress));
+    }
     
-    document.getElementById('hasil-bintang').textContent = 
-        '⭐'.repeat(bintang) + '☆'.repeat(3 - bintang);
+    document.getElementById('stars').textContent = '⭐'.repeat(bintang) + '☆'.repeat(3 - bintang);
     
-    const pesan = bintang === 3 ? 'Sempurna!' : 
-                  bintang === 2 ? 'Bagus!' : 'Kerja bagus!';
-    document.getElementById('hasil-teks').textContent = pesan;
+    const pesan = bintang === 3 ? 'Sempurna! Kamu Hebat! 🌟' : 
+                  bintang === 2 ? 'Bagus Sekali! ' : 'Kerja Bagus! ';
+    document.getElementById('doneText').textContent = pesan;
     
-    pindahLayar('layar-selesai');
+    buatKonfetiBanyak();
+    showScreen('done');
 }
 
-function ulangiLevel() {
-    mulaiLevel(state.levelAktif);
-}
-
-function lanjutLevel() {
-    if (state.levelAktif < 1000) {
-        mulaiLevel(state.levelAktif + 1);
+function nextLevel() {
+    if (state.level < 1000) {
+        mainLevel(state.level + 1);
     } else {
-        keLevel();
+        showLevels();
     }
 }
 
-// ============================================
-// INIT
-// ============================================
-console.log('🎮 Pintar Ceria LITE loaded!');
+// Efek Konfeti
+function buatKonfeti() {
+    const container = document.getElementById('confetti');
+    const warna = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff', '#ff88cc'];
+    
+    for (let i = 0; i < 20; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.background = warna[Math.floor(Math.random() * warna.length)];
+        piece.style.animationDelay = Math.random() * 0.5 + 's';
+        container.appendChild(piece);
+        
+        setTimeout(() => piece.remove(), 3000);
+    }
+}
+
+function buatKonfetiBanyak() {
+    const container = document.getElementById('confetti');
+    const warna = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff', '#ff88cc', '#aa44ff'];
+    
+    for (let i = 0; i < 50; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.background = warna[Math.floor(Math.random() * warna.length)];
+        piece.style.animationDelay = Math.random() * 1 + 's';
+        piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        container.appendChild(piece);
+        
+        setTimeout(() => piece.remove(), 4000);
+    }
+}
+
+// Init
+console.log('🎮 Game Edukasi Anak siap dimainkan!');
