@@ -757,9 +757,6 @@ body {
 
 .kartu-gambar:active {
     transform: scale(0.95);
-}
-
-.kartu-gambar:hover {
     border-color: #667eea;
 }
 
@@ -780,27 +777,28 @@ body {
     margin-top: 3px;
 }
 
+/* CANVAS */
 .canvas-container {
     position: relative;
     width: 100%;
     max-width: 500px;
     margin: 10px auto;
+    aspect-ratio: 1;
     background: white;
     border-radius: 20px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     overflow: hidden;
-    aspect-ratio: 1;
 }
 
 #canvasGambar {
     width: 100%;
     height: 100%;
     display: block;
-    cursor: crosshair;
     touch-action: none;
 }
 
-.canvas-overlay {
+/* PERBAIKAN: Container titik */
+.titik-container {
     position: absolute;
     top: 0;
     left: 0;
@@ -809,11 +807,12 @@ body {
     pointer-events: none;
 }
 
+/* PERBAIKAN: Setiap titik */
 .titik {
     position: absolute;
-    width: 30px;
-    height: 30px;
-    background: #667eea;
+    width: 36px;
+    height: 36px;
+    background: #ff4444;
     border: 3px solid white;
     border-radius: 50%;
     transform: translate(-50%, -50%);
@@ -822,26 +821,46 @@ body {
     justify-content: center;
     color: white;
     font-weight: bold;
-    font-size: 0.8em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    font-size: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+    z-index: 10;
     transition: all 0.3s;
 }
 
 .titik.aktif {
-    background: #43e97b;
-    animation: pulseTitik 1s infinite;
+    background: #4caf50;
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+    animation: pulseTitik 0.8s infinite;
+    box-shadow: 0 0 0 8px rgba(76, 175, 80, 0.3), 0 3px 10px rgba(0,0,0,0.4);
 }
 
 .titik.selesai {
-    background: #4caf50;
-    transform: translate(-50%, -50%) scale(0.8);
+    background: #2196F3;
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Garis putus-putus panduan */
+.titik-garis {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
 }
 
 @keyframes pulseTitik {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.2); }
+    0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 8px rgba(76,175,80,0.3), 0 3px 10px rgba(0,0,0,0.4); }
+    50% { transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 0 0 15px rgba(76,175,80,0.15), 0 3px 10px rgba(0,0,0,0.4); }
 }
 
+/* TOOLS */
 .tools-menggambar {
     max-width: 500px;
     margin: 15px auto;
@@ -855,16 +874,17 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-weight: bold;
     color: #333;
+    font-size: 1em;
 }
 
 .warna-picker {
     display: flex;
     gap: 8px;
     justify-content: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
 }
 
@@ -884,14 +904,14 @@ body {
 
 .warna-btn.active {
     border-color: #333;
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 
 .slider-ukuran {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-size: 0.9em;
 }
 
@@ -906,8 +926,8 @@ body {
 
 .slider-ukuran input::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     background: #667eea;
     border-radius: 50%;
     cursor: pointer;
@@ -956,6 +976,7 @@ body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
+/* SELESAI GAMBAR */
 .selesai-gambar {
     position: fixed;
     top: 0;
@@ -973,7 +994,7 @@ body {
     display: none;
 }
 
-.selesai-gambar > div {
+.box-selesai-gambar {
     background: white;
     padding: 30px;
     border-radius: 20px;
@@ -985,10 +1006,5 @@ body {
 @media (max-width: 480px) {
     .pilih-gambar-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-    .titik {
-        width: 25px;
-        height: 25px;
-        font-size: 0.7em;
     }
 }
