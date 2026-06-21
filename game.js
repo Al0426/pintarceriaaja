@@ -10,13 +10,13 @@ const DATA = {
         {nama: 'Gajah', gambar: '🐘'},
         {nama: 'Singa', gambar: '🦁'},
         {nama: 'Monyet', gambar: '🐵'},
-        {nama: 'Kelinci', gambar: ''}
+        {nama: 'Kelinci', gambar: '🐰'}
     ],
     buah: [
-        {nama: 'Apel', gambar: ''},
+        {nama: 'Apel', gambar: '🍎'},
         {nama: 'Pisang', gambar: '🍌'},
         {nama: 'Jeruk', gambar: '🍊'},
-        {nama: 'Anggur', gambar: ''},
+        {nama: 'Anggur', gambar: '🍇'},
         {nama: 'Stroberi', gambar: '🍓'},
         {nama: 'Semangka', gambar: '🍉'},
         {nama: 'Nanas', gambar: '🍍'},
