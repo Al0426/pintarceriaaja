@@ -153,16 +153,13 @@
         </div>
     </div>
 	
-	<!-- LAYAR MENU MENGGAMBAR -->
+<!-- LAYAR MENU MENGGAMBAR -->
 <div id="menu-gambar" class="screen">
     <div class="header-levels">
         <button class="btn-kembali" onclick="showMenu()">⬅️</button>
         <h2>🎨 Game Menggambar</h2>
     </div>
-    
-    <div class="pilih-gambar-grid" id="pilihGambarGrid">
-        <!-- Akan diisi oleh JavaScript -->
-    </div>
+    <div class="pilih-gambar-grid" id="pilihGambarGrid"></div>
 </div>
 
 <!-- LAYAR MENGGAMBAR -->
@@ -178,19 +175,18 @@
     
     <div class="canvas-container">
         <canvas id="canvasGambar"></canvas>
-        <div class="canvas-overlay" id="canvasOverlay">
-            <div class="titik" id="titikContainer"></div>
-        </div>
+        <!-- PERBAIKAN: Container titik TANPA class "titik" -->
+        <div class="titik-container" id="titikContainer"></div>
     </div>
     
     <div class="tools-menggambar">
         <div class="info-langkah">
-            <span id="langkahTeks">Hubungkan titik 1 ke titik 2</span>
+            <span id="langkahTeks">Sentuh titik 1 untuk mulai</span>
             <span id="progressTitik">0/0</span>
         </div>
         
         <div class="warna-picker" id="warnaPicker">
-            <div class="warna-btn active" data-warna="#000000" style="background:#000"></div>
+            <div class="warna-btn active" data-warna="#333333" style="background:#333"></div>
             <div class="warna-btn" data-warna="#ff4444" style="background:#ff4444"></div>
             <div class="warna-btn" data-warna="#4488ff" style="background:#4488ff"></div>
             <div class="warna-btn" data-warna="#44cc44" style="background:#44cc44"></div>
@@ -209,14 +205,17 @@
         <div class="mode-buttons">
             <button class="btn-mode active" id="btnHubung" onclick="setMode('hubung')">🔗 Hubungkan</button>
             <button class="btn-mode" id="btnBebas" onclick="setMode('bebas')">✏️ Bebas</button>
-            <button class="btn-mode" id="btnHapus" onclick="setMode('hapus')"> Hapus</button>
+            <button class="btn-mode" id="btnHapus" onclick="setMode('hapus')">🧹 Hapus</button>
         </div>
     </div>
     
     <div id="selesaiGambar" class="selesai-gambar hidden">
-        <div class="trofi-animasi">🎉</div>
-        <h2>Hebat! Gambar Selesai!</h2>
-        <button class="btn-aksi btn-main" onclick="tutupSelesaiGambar()">Lanjut Mewarnai</button>
+        <div class="box-selesai-gambar">
+            <div class="emoji-besar">🎉</div>
+            <h2>Hebat! Gambar Selesai!</h2>
+            <button class="btn-aksi btn-main" onclick="tutupSelesaiGambar()">🎨 Lanjut Mewarnai</button>
+            <button class="btn-aksi btn-pilih" onclick="simpanGambar()">💾 Simpan</button>
+        </div>
     </div>
 </div>
 
