@@ -3,11 +3,9 @@ const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
-  // PENTING: Tambahkan file CSS atau JS utama Anda di sini, contoh:
-  // './style.css',
-  // './script.js'
+  './style.css',
+  './game.js',
+  './draw.js'
 ];
 
 // Install Service Worker
@@ -15,26 +13,26 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Cache berhasil dibuka');
+        console.log('Cache dibuka');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Fetch (Menampilkan dari cache jika ada)
+// Fetch dari cache
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         if (response) {
-          return response; // Kembalikan dari cache
+          return response;
         }
-        return fetch(event.request); // Ambil dari network jika tidak ada di cache
+        return fetch(event.request);
       })
-    );
+  );
 });
 
-// Activate (Hapus cache lama jika ada update)
+// Activate dan hapus cache lama
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
