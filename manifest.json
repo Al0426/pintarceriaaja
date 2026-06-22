@@ -1,12 +1,12 @@
 {
   "name": "Pintar Ceria Aja",
   "short_name": "PintarCeria",
-  "description": "Aplikasi mewarnai dan menggambar yang ceria.",
-  "start_url": "./",
+  "description": "Aplikasi mewarnai dan menggambar yang ceria untuk anak",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ff6b6b",
-  "orientation": "any",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "./icon-192.png",
