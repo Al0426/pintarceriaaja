@@ -17,5 +17,42 @@
       "sizes": "512x512",
       "type": "image/png"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "./screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tampilan Desktop Pintar Ceria Aja"
+    },
+    {
+      "src": "./screenshot-narrow.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tampilan Mobile Pintar Ceria Aja"
+    }
+  ]
+}
+{
+  "name": "Pintar Ceria Aja",
+  "short_name": "PintarCeria",
+  "description": "Aplikasi mewarnai dan menggambar yang ceria untuk anak",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff6b6b",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
